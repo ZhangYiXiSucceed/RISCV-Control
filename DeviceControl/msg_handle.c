@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "msg_handle.h"
 #include "thread.h"
-
+#include "net.h"
 
 void usb_speed_test(usb_device_handle_t *usb_device);
 void test_get_capacity(usb_device_handle_t *usb_device);
@@ -94,9 +94,11 @@ void test_get_device_description(usb_device_handle_t *usb_device)
 
 void* net_msg_process(void* attr)
 {
+    thread_handle_t *net_thread = (thread_handle_t *)attr;
+    net_device_handle_t *net_device = (net_device_handle_t*)net_thread->attr.internal_data;
     while(1)
     {
-        printf("hello world, net msg\r\n");
+        net_send(net_device, "hello world, net msg\r\n", 20);
         usleep(1000000);
     }
 }

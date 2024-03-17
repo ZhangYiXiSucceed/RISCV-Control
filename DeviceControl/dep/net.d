@@ -73,4 +73,51 @@ obj/net.o: net.c /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/riscv64-linux-gnu/asm/sockios.h \
  /usr/include/asm-generic/sockios.h \
  /usr/include/riscv64-linux-gnu/bits/types/struct_osockaddr.h \
- /usr/include/riscv64-linux-gnu/bits/in.h net.h
+ /usr/include/riscv64-linux-gnu/bits/in.h /usr/include/netdb.h \
+ /usr/include/rpc/netdb.h /usr/include/riscv64-linux-gnu/bits/netdb.h \
+ /usr/include/signal.h \
+ /usr/include/riscv64-linux-gnu/bits/signum-generic.h \
+ /usr/include/riscv64-linux-gnu/bits/signum-arch.h \
+ /usr/include/riscv64-linux-gnu/bits/types/sig_atomic_t.h \
+ /usr/include/riscv64-linux-gnu/bits/types/siginfo_t.h \
+ /usr/include/riscv64-linux-gnu/bits/types/__sigval_t.h \
+ /usr/include/riscv64-linux-gnu/bits/siginfo-arch.h \
+ /usr/include/riscv64-linux-gnu/bits/siginfo-consts.h \
+ /usr/include/riscv64-linux-gnu/bits/types/sigval_t.h \
+ /usr/include/riscv64-linux-gnu/bits/types/sigevent_t.h \
+ /usr/include/riscv64-linux-gnu/bits/sigevent-consts.h \
+ /usr/include/riscv64-linux-gnu/bits/sigaction.h \
+ /usr/include/riscv64-linux-gnu/bits/sigcontext.h \
+ /usr/include/riscv64-linux-gnu/bits/types/stack_t.h \
+ /usr/include/riscv64-linux-gnu/sys/ucontext.h \
+ /usr/include/riscv64-linux-gnu/bits/sigstack.h \
+ /usr/include/riscv64-linux-gnu/bits/sigstksz.h \
+ /usr/include/riscv64-linux-gnu/bits/ss_flags.h \
+ /usr/include/riscv64-linux-gnu/bits/types/struct_sigstack.h \
+ /usr/include/riscv64-linux-gnu/bits/sigthread.h \
+ /usr/include/riscv64-linux-gnu/bits/signal_ext.h /usr/include/fcntl.h \
+ /usr/include/riscv64-linux-gnu/bits/fcntl.h \
+ /usr/include/riscv64-linux-gnu/bits/fcntl-linux.h \
+ /usr/include/riscv64-linux-gnu/bits/stat.h \
+ /usr/include/riscv64-linux-gnu/bits/struct_stat.h /usr/include/syslog.h \
+ /usr/include/riscv64-linux-gnu/sys/syslog.h \
+ /usr/include/riscv64-linux-gnu/bits/syslog-path.h /usr/include/termios.h \
+ /usr/include/riscv64-linux-gnu/bits/termios.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-struct.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-c_cc.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-c_iflag.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-c_oflag.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-baud.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-c_cflag.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-c_lflag.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-tcflow.h \
+ /usr/include/riscv64-linux-gnu/bits/termios-misc.h \
+ /usr/include/riscv64-linux-gnu/sys/ttydefaults.h /usr/include/time.h \
+ /usr/include/riscv64-linux-gnu/bits/time.h \
+ /usr/include/riscv64-linux-gnu/bits/types/struct_tm.h \
+ /usr/include/riscv64-linux-gnu/bits/types/struct_itimerspec.h \
+ /usr/include/riscv64-linux-gnu/sys/stat.h /usr/include/errno.h \
+ /usr/include/riscv64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
+ /usr/include/riscv64-linux-gnu/asm/errno.h \
+ /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
+ net.h

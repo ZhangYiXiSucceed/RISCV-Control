@@ -1,0 +1,8 @@
+DeviceControl/.vscode
+DeviceControl/*.o
+DeviceControl/*.out
+DeviceControl/obj
+DeviceControl/obj/*.o
+DeviceControl/dep
+DeviceControl/dep/*.d
+DeviceControl/out
