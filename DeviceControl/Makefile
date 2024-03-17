@@ -1,6 +1,6 @@
 CC = gcc
 LINK = gcc
-CFLAGS = -march=rv64imafd -mabi=lp64d
+CFLAGS = -march=rv64imafd -mabi=lp64d -pthread -g
 LFLAGS = 
 
 TARGET = DeviceControl
@@ -43,7 +43,7 @@ $(OBJ_DIR)/%.o : %.c  Makefile
 $(DEP_DIR)/%.d : OBJ_BNAME=$(basename $(notdir $@))
 $(DEP_DIR)/%.d : %.c  Makefile 
 	$(ECHO) "Update dependency Compiling" $<
-	$(CC) -M   $(CFLAGS) $< -o "$(OBJ_DIR)/$(OBJ_BNAME).o $(DEP_DIR)/$(OBJ_BNAME).d"  >  $@
+	$(CC) -M  -MT  "$(OBJ_DIR)/$(OBJ_BNAME).o"  $(CFLAGS) $< -o  $@
 	$(CC) -c   $(CFLAGS) $< -o $(OBJ_DIR)/$(OBJ_BNAME).o
 
 .PHONY : clean

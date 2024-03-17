@@ -1,27 +1,30 @@
 #include "thread.h"
+#include <stdlib.h>
  
-int thread_create(pthread_t *thread, callback func, void *arg)
-{
-	memset(thread,0x00,sizeof(pthread_t));
-	int TempReturnValue;
+int thread_create(thread_handle_t *thread, thread_attr_t* attr)
+{	
+	thread->attr = *attr;
 
-	res = pthread_create(thread,NULL,func,arg);  
-	if(TempReturnValue!=0)
+	memset((char*)&thread->pthread,0x00,sizeof(thread->pthread));
+	int res = pthread_create(&thread->pthread, NULL, thread->attr.func, thread->attr.arg);  
+	if(res!=0)
 	{
 		printf("thread created failed!\n");
 	}
 	else
 	{
 		int id = pthread_self();
+		thread->thread_id = id;
 		printf("thread id = %d\n",id);
 	}
-	return id;
+
+	return res;
 }
-void thread_stop(pthread_t *pthread)
+void thread_stop(thread_handle_t *thread)
 {
-  	if(*pthread!=0)
+  	if(thread->pthread!=0)
   	{
-  		pthread_join(*pthread, NULL);
+  		pthread_join(thread->pthread, NULL);
   		printf("thread is over!\n");
   	}
 	else
