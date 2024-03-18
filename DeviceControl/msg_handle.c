@@ -4,7 +4,7 @@
 #include "thread.h"
 #include "net.h"
 
-void usb_speed_test(usb_device_handle_t *usb_device);
+int usb_speed_test(usb_device_handle_t *usb_device);
 void test_get_capacity(usb_device_handle_t *usb_device);
 void test_get_device_description(usb_device_handle_t *usb_device);
 
@@ -19,8 +19,12 @@ void*  usb_msg_process(void* attr)
     }
 }
 
+void usb_cmd_handle()
+{
 
-void usb_speed_test(usb_device_handle_t *usb_device)
+}
+
+int usb_speed_test(usb_device_handle_t *usb_device)
 {
     u8 data[512]= {0};
     for(int i=0;i<512;i++)
@@ -38,12 +42,12 @@ void usb_speed_test(usb_device_handle_t *usb_device)
         //printf("res=%d\r\n",res);
         while(1)
         {
-        res = usb_has_data(usb_device, 0xF1);
-        //printf("has data res=%d\r\n",res);
-        if(res)
-        { 
-            break;
-        }
+            res = usb_has_data(usb_device, 0xF1);
+            //printf("has data res=%d\r\n",res);
+            if(res)
+            { 
+                break;
+            }
         }
         if(res)
         {
@@ -69,7 +73,9 @@ void usb_speed_test(usb_device_handle_t *usb_device)
     useconds = end.tv_usec - start.tv_usec;
     mtime = ((seconds) * 1000 + useconds / 1000.0) + 0.5;
 
-    printf("%ld ms,speed=%f B/S\n", mtime, (float)(times*512/mtime*1000));
+    int usb_speed = times*512/mtime*1000
+    printf("%ld ms,speed=%d B/S\n", mtime, usb_speed);
+    return usb_speed;
 }
 
 void test_get_capacity(usb_device_handle_t *usb_device)
@@ -100,5 +106,33 @@ void* net_msg_process(void* attr)
     {
         net_send(net_device, "hello world, net msg\r\n", 20);
         usleep(1000000);
+    }
+}
+
+void net_cmd_handle(u8* packet, u32 len)
+{
+    cmd_msg_frame_t *cmd_msg_frame = (cmd_msg_frame_t *)packet;
+	cmd_process_errcode_e res = MSG_OK;
+	system_var.host_cmd_flag = 1;
+	if(APP_DEVICE_ADDR  != cmd_msg_frame->header)
+	{
+		rt_kprintf("frame header err,0x%x\r\n", cmd_msg_frame->header);
+		res = MSG_HEADER_ERR;
+		goto err
+	}
+	if(MSG_ADDR_ERR != cmd_msg_frame->device_addr)
+	{
+		rt_kprintf("device addr err,0x%x\r\n", cmd_msg_frame->device_addr);
+		res = MSG_ADDR_ERR;
+		goto err
+	}
+	switch(cmd_msg_frame->cmd)
+	{
+		case GET_USB_INFO_CMD:
+        {
+
+        }break;
+        default:
+        break;
     }
 }
