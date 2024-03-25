@@ -113,7 +113,6 @@ void net_cmd_handle(u8* packet, u32 len)
 {
     cmd_msg_frame_t *cmd_msg_frame = (cmd_msg_frame_t *)packet;
 	cmd_process_errcode_e res = MSG_OK;
-	system_var.host_cmd_flag = 1;
 	if(APP_DEVICE_ADDR  != cmd_msg_frame->header)
 	{
 		rt_kprintf("frame header err,0x%x\r\n", cmd_msg_frame->header);
@@ -135,4 +134,13 @@ void net_cmd_handle(u8* packet, u32 len)
         default:
         break;
     }
+    	if((HEART_CMD != cmd_msg_frame->cmd) && (VERSION_CMD != cmd_msg_frame->cmd) && (PICTURE_CMD != cmd_msg_frame->cmd))
+	{
+		msg_rsp_packet_and_send(cmd_msg_frame->cmd,res);
+	}
+	
+	return MSG_OK;
+err:
+	msg_rsp_packet_and_send(cmd_msg_frame->cmd,res);
+	return res;
 }

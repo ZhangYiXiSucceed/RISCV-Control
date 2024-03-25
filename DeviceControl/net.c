@@ -75,9 +75,35 @@ void net_send(net_device_handle_t* net_device, unsigned char* message, int len)
 }
 
 
-void net_rev(net_device_handle_t* net_device, unsigned char*buffer)
+void net_rev(net_device_handle_t* net_device, unsigned char*buffer, u16 data_len)
 {
-    // 接收数据
-    read(net_device->fd, buffer, 1024);
-    printf("Server: %s\n",buffer);
+    fd_set rfds_Socket;
+    FD_ZERO(&rfds_Socket);
+    FD_SET(net_device->fd, &rfds_Socket);
+    int retval=select(net_device->fd + 1, &rfds_Socket, NULL, NULL, NULL);
+                                    //tv控制选择的时间，若规定时间内没有收到数据
+                                    //则不监控该rfds。则若为NULL，一直等到接收到数据
+                                    //再继续程序执行。
+    printf("retval=%d--rfds_Socket=%d*****Sockfd_CCU=%d\n",retval,rfds_Socket,net_device->fd);
+    if(retval==0)
+    {
+        printf("select error\n");
+        return;
+    }
+
+    if(FD_ISSET(net_device->fd, &rfds_Socket)) //接收到数据了
+    {
+        //bzero(RecBuff_VST, MaxLength);
+        int  len = recv(net_device->fd, buffer, data_len, 0);
+        if(len<=0)
+        {
+            close(net_device->fd);
+            net_device->fd=-1;
+        }
+    }
+    else
+    {
+        printf("dont recieve data\n");
+        sleep(1);
+    }
 }
