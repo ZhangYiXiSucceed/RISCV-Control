@@ -53,17 +53,6 @@ int usb_speed_test(usb_device_handle_t *usb_device)
         {
             //memset(data,0x00,sizeof(data));
             res = usb_rx_data(usb_device, 0xF1, data, 512);
-
-            // printf("rx data res=%d\r\n",res);
-            // for(int i=0;i<512;i++)
-            // {
-            //     if(0 == (i%16))
-            //     {
-            //       printf("\r\n");
-            //     }
-            //     printf("%04d ",data[i]);
-            // }
-            // printf("\r\n");
         }
         count++;
     }

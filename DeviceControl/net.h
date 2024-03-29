@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
+#include "basic_type.h"
 
 #define NET_DEVICE_NAME_LEN 16
 typedef struct net_device_handle_struct{

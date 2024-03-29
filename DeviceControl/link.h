@@ -7,6 +7,7 @@ extern "C"{
 
 #include "scsi.h"
 #include "link.h"
+#include "basic_type.h"
 
 #define   DEVICE_NAME_LEN 64 
 

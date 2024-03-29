@@ -47,6 +47,7 @@ int net_init(net_device_handle_t* net_device, char* ip, int port)
         return -1;
     }
     net_device->fd = client_socket;
+    printf("connect is connected\r\n");
     return client_socket;
 }
 
@@ -98,7 +99,7 @@ int net_rev(net_device_handle_t* net_device, unsigned char*buffer, u16 data_len)
 
         if(FD_ISSET(net_device->fd, &rfds_Socket)) //接收到数据了
         {
-            //bzero(RecBuff_VST, MaxLength);
+            bzero(buffer, data_len);
             len = recv(net_device->fd, buffer, data_len, 0);
             if(len<=0)
             {
