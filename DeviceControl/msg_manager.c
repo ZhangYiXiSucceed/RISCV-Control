@@ -56,19 +56,27 @@ void* msg_queue_get_free(msg_queue_t* msg_queue)
 
 
 
-void msg_queue_put_free(msg_queue_t* msg_queue)
+int  msg_queue_put_free(msg_queue_t* msg_queue, void* free_buf)
 {
-
+    msg_queue->free_list.data_item[msg_queue->free_list.header_item.tail_cnt%msg_queue->msq_queue_num].data_buf = free_buf;
+    msg_queue->free_list.header_item.tail_cnt ++;
 }
 
 
 void* msg_queue_get_data(msg_queue_t* msg_queue)
 {
-
+    u8* buf_addr = NULL;
+    if(msg_queue->data_list.header_item.header_cnt < msg_queue->data_list.header_item.tail_cnt)
+    {
+        buf_addr = msg_queue->data_list.data_item[msg_queue->data_list.header_item.header_cnt%msg_queue->msq_queue_num].data_buf;
+         msg_queue->data_list.header_item.header_cnt ++;
+    }
+    return buf_addr;
 }
 
 
-void* msg_queu_put_data(msg_queue_t* msg_queue)
+int msg_queue_put_data(msg_queue_t* msg_queue, void* data_buf)
 {
-
+    msg_queue->data_list.data_item[msg_queue->data_list.header_item.tail_cnt%msg_queue->msq_queue_num].data_buf = data_buf;
+    msg_queue->data_list.header_item.tail_cnt ++;
 }
