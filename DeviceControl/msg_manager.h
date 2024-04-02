@@ -27,7 +27,7 @@ typedef struct msg_queue_struct
     msg_queue_manager_list_t data_list;
     msg_queue_manager_list_t free_list;
     u32 msq_queue_num;
-    u32 msg_queu_one_size;
+    u32 msg_queue_one_size;
 }msg_queue_t;
 
 

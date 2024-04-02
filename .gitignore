@@ -6,3 +6,9 @@ DeviceControl/obj/*.o
 DeviceControl/dep
 DeviceControl/dep/*.d
 DeviceControl/out
+*.o
+*.out
+obj
+obj/*.o
+dep
+dep/*.d

@@ -1,6 +1,10 @@
 CC = gcc
 LINK = gcc
+ifdef WIN 
+CFLAGS = -pthread -g
+else
 CFLAGS = -march=rv64imafd -mabi=lp64d -pthread -g
+endif
 LFLAGS = 
 
 TARGET = DeviceControl
