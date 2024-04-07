@@ -54,14 +54,14 @@ int net_init(net_device_handle_t* net_device, char* ip, int port)
 int net_send(net_device_handle_t* net_device, unsigned char* message, int len)
 {
     // send data
-    int len = -1;
+    int send_len = -1;
     signal(SIGPIPE, SIG_IGN);   //ignore the quit signal 
     if(net_device->fd > 0)
     {
         if((message != NULL) && (len > 0))
         {
-           len = send(net_device->fd, message, len, 0);
-            if(len==-1)
+           send_len = send(net_device->fd, message, len, 0);
+            if(send_len==-1)
             {
                 printf("Failed to Send Message!\n");
                 close(net_device->fd);
@@ -74,7 +74,7 @@ int net_send(net_device_handle_t* net_device, unsigned char* message, int len)
         printf("net is disconnect\n");
         net_init(net_device, net_device->ip, net_device->port);
     }
-    return len;
+    return send_len;
 }
 
 
@@ -91,7 +91,7 @@ int net_rev(net_device_handle_t* net_device, unsigned char*buffer, u16 data_len)
                                         //tv控制选择的时间，若规定时间内没有收到数据
                                         //则不监控该rfds。则若为NULL，一直等到接收到数据
                                         //再继续程序执行。
-        printf("retval=%d--rfds_Socket=%d*****Sockfd_CCU=%d\n",retval,rfds_Socket,net_device->fd);
+        printf("retval=%d-----fd=%d\n",retval,net_device->fd);
         if(retval==0)
         {
             printf("select error\n");

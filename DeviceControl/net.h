@@ -15,7 +15,8 @@ typedef struct net_device_handle_struct{
 
 
 int net_init(net_device_handle_t* net_device, char* ip, int port);
-void net_send(net_device_handle_t* net_device, unsigned char* message, int len);
+int net_send(net_device_handle_t* net_device, unsigned char* message, int len);
+int net_rev(net_device_handle_t* net_device, unsigned char*buffer, u16 data_len);
 #ifdef __cplusplus
 };
 #endif

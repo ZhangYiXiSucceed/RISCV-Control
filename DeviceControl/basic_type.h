@@ -20,8 +20,6 @@ typedef   int8_t     s8;///8位
 
 typedef int handle;
 
-#define NULL  ((void*)0)
-
 
 #endif
 

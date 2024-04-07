@@ -1,10 +1,13 @@
 #ifndef __MSG_HANDLE_H__
 #define __MSG_HANDLE_H__
 
+#include "basic_type.h"
 
 #define APP_DEVICE_ADDR  0
 #define MSG_FRAME_HEADER 0x676A737A
 #define OTA_ONE_PACKAGE_SIZE   1024
+
+#define rt_kprintf printf
 
 typedef struct cmd_msg_frame_struct
 {
@@ -18,7 +21,7 @@ typedef struct cmd_msg_frame_struct
 typedef struct usb_info_struct
 {
 	int usb_speed;
-	int block_addr;
+	int block_num;
 	int block_size;
 	int rsv;
 }usb_info_t;

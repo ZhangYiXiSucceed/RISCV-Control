@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include "msg_manager.h"
 
 int msg_queue_create(msg_queue_t* msg_queue, void* mem_buf, u32 mem_size, u32 one_data_size)
