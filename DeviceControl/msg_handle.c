@@ -91,14 +91,40 @@ void* net_msg_process(void* attr)
 {
     thread_handle_t *net_thread = (thread_handle_t *)attr;
     net_device_handle_t *net_device = (net_device_handle_t*)net_thread->attr.internal_data;
+    int net_recv_res;
+    u8 buf[64];
     while(1)
     {
+        net_recv_len = net_rev(net_device, buf, 64);
+        if(net_recv_len>=0)
+        {
+            net_cmd_handle(net_device, buf, net_recv_len);
+        }
         net_send(net_device, "hello world, net msg\r\n", 20);
-        usleep(1000000);
     }
 }
 
-void net_cmd_handle(u8* packet, u32 len)
+void msg_rsp_packet_and_send(net_device_handle_t *net_device, u16 cmd, u8 err_code)
+{
+	u8 cmd_data[sizeof(cmd_msg_frame_t) + 1 + 4];
+	cmd_msg_frame_t* msg = (cmd_msg_frame_t*)cmd_data;
+
+	msg->header = MSG_FRAME_HEADER;
+	msg->cmd = cmd;
+	msg->device_addr = 0x00;
+	msg->seq = 0x00;
+	msg->data_len = 0x01;
+
+	u8* temp_err_code = (u8*)&cmd_data[sizeof(cmd_msg_frame_t)];
+	*temp_err_code = err_code;
+
+	u32* check_sum = (u32*)&cmd_data[sizeof(cmd_msg_frame_t) + 1 ];
+	*check_sum = CalCheckSum(cmd_data,sizeof(cmd_msg_frame_t) + 1);
+
+	net_send(net_device, cmd_data,sizeof(cmd_msg_frame_t) + 1 + 4);
+}
+
+void net_cmd_handle(net_device_handle_t *net_device, u8* packet, u32 len)
 {
     cmd_msg_frame_t *cmd_msg_frame = (cmd_msg_frame_t *)packet;
 	cmd_process_errcode_e res = MSG_OK;
@@ -118,18 +144,37 @@ void net_cmd_handle(u8* packet, u32 len)
 	{
 		case GET_USB_INFO_CMD:
         {
+            u8 cmd_data[sizeof(cmd_msg_frame_t) + sizeof(version_info_t) + 4];
+			cmd_msg_frame_t* msg = (cmd_msg_frame_t*)cmd_data;
 
+			msg->header = MSG_FRAME_HEADER;
+			msg->cmd = GET_USB_INFO_CMD;
+			msg->device_addr = APP_DEVICE_ADDR;
+			msg->seq = 0x00;
+			msg->data_len = sizeof(usb_info_t);
+
+			u8* msg_data = (u8*)(msg + 1);
+			usb_info_t *usb_info = (usb_info_t *)msg_data;
+			usb_info->usb_speed = 0x1;
+			usb_info->block_addr = 0x2;
+			usb_info->block_size = 0x3;
+			usb_info->rsv = 0x0;
+
+			u32* check_sum = (u32*)&cmd_data[sizeof(cmd_msg_frame_t) + sizeof(usb_info_t)];
+			*check_sum = CalCheckSum(cmd_data,sizeof(cmd_msg_frame_t) + sizeof(usb_info_t));
+
+			msg_rsp_packet_and_send(net_device, cmd_data,sizeof(cmd_msg_frame_t) + sizeof(usb_info_t) + 4);
         }break;
         default:
         break;
     }
     	if((HEART_CMD != cmd_msg_frame->cmd) && (VERSION_CMD != cmd_msg_frame->cmd) && (PICTURE_CMD != cmd_msg_frame->cmd))
 	{
-		msg_rsp_packet_and_send(cmd_msg_frame->cmd,res);
+		msg_rsp_packet_and_send(net_device, cmd_msg_frame->cmd,res);
 	}
 	
 	return MSG_OK;
 err:
-	msg_rsp_packet_and_send(cmd_msg_frame->cmd,res);
+	msg_rsp_packet_and_send(net_device, cmd_msg_frame->cmd,res);
 	return res;
 }
