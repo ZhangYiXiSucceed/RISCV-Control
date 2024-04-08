@@ -75,7 +75,7 @@ void test_get_capacity(usb_device_handle_t *usb_device, int *total_blcok, int *b
     *total_blcok =  data[0]<<24 | data[1]<<16 |data[2]<<8 |data[3];
     *block_size =   data[4]<<24 | data[5]<<16 |data[6]<<8 |data[7];
 
-    printf("total_blcok=%d  block_size=%d\r\n", total_blcok + 1, block_size);
+    printf("total_blcok=%d  block_size=%d\r\n", *total_blcok + 1, *block_size);
 }
 
 void test_get_device_description(usb_device_handle_t *usb_device)

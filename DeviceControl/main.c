@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     thread_create(&usb_msg_handle_g, &usb_attr);
 
     thread_attr_t net_attr;
-    net_attr.func = net_msg_process;
+    net_attr.func = (callback)net_msg_process;
     net_attr.arg = &net_msg_handle_g;
     net_attr.internal_data = &net_device_g;
     thread_create(&net_msg_handle_g, &net_attr);
