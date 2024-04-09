@@ -161,6 +161,10 @@ int net_cmd_handle(net_device_handle_t *net_device, u8* packet, u32 len)
 			net_send(net_device, cmd_data,sizeof(cmd_msg_frame_t) + sizeof(usb_info_t) + 4);
             rt_kprintf("len=%d\r\n",sizeof(cmd_data));
         }break;
+        case SET_PICTURE_CMD:
+        {
+
+        }break;
         default:
         break;
     }

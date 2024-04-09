@@ -55,6 +55,8 @@ enum
 	SET_TIME_DATE,
 
 	GET_USB_INFO_CMD = 0x20,
+	SET_PICTURE_CMD,
+	
 
 };
 void* usb_msg_process(void* attr);
