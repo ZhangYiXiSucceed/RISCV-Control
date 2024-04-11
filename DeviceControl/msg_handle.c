@@ -7,21 +7,37 @@
 int usb_speed_test(usb_device_handle_t *usb_device);
 void test_get_capacity(usb_device_handle_t *usb_device, int *total_blcok, int *block_size);
 void test_get_device_description(usb_device_handle_t *usb_device);
+void control_lcd_show_cmd_process();
 usb_info_t usb_device_info_g;
+usb_handle_t  usb_handle_g;
 void*  usb_msg_process(void* attr)
 {
     thread_handle_t *usb_thread = (thread_handle_t *)attr;
-    usb_device_handle_t *usb_device = (usb_device_handle_t*)usb_thread->attr.internal_data;
+    usb_handle_g.device = (usb_device_handle_t*)usb_thread->attr.internal_data;
     while(1)
     {
-        usb_device_info_g.usb_speed = usb_speed_test(usb_device);
-        test_get_capacity(usb_device, &usb_device_info_g.block_num, &usb_device_info_g.block_size);
+        usb_cmd_handle();
     }
 }
 
 void usb_cmd_handle()
 {
-
+    switch(usb_handle_g.cmd)
+    {
+        case USB_GET_INFO_CMD:
+        {
+            test_get_capacity(usb_handle_g.device, &usb_handle_g.info.block_num, &usb_handle_g.info.block_size);
+        }break;
+         case USB_SPEED_CMD:
+        {
+            usb_handle_g.info.usb_speed = usb_speed_test(usb_handle_g.device);
+        }break;
+         case USB_SHOW_CMD:
+        {
+            control_lcd_show_cmd_process();
+        }break;
+        default:
+    }
 }
 
 int usb_speed_test(usb_device_handle_t *usb_device)
@@ -87,6 +103,11 @@ void test_get_device_description(usb_device_handle_t *usb_device)
     printf("Vendor=%s Product=%s Version=%s\r\n", &data[8], &data[16], &data[32]);
 }
 
+
+void control_lcd_show_cmd_process()
+{
+
+}
 
 u32 CalCheckSum(uint8_t* Data, uint32_t len)
 {
