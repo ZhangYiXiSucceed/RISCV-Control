@@ -8,6 +8,7 @@ int usb_speed_test(usb_device_handle_t *usb_device);
 void test_get_capacity(usb_device_handle_t *usb_device, int *total_blcok, int *block_size);
 void test_get_device_description(usb_device_handle_t *usb_device);
 void control_lcd_show_cmd_process();
+void set_usb_cmd(uint8_t cmd);
 usb_info_t usb_device_info_g;
 usb_handle_t  usb_handle_g;
 void*  usb_msg_process(void* attr)
@@ -39,7 +40,10 @@ void usb_cmd_handle()
         default:
     }
 }
-
+void set_usb_cmd(uint8_t cmd)
+{
+    usb_handle_g.cmd = cmd;
+}
 int usb_speed_test(usb_device_handle_t *usb_device)
 {
     u8 data[512]= {0};
