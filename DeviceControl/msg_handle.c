@@ -24,7 +24,7 @@ void*  usb_msg_process(void* attr)
 void usb_cmd_handle()
 {
     switch(usb_handle_g.cmd)
-    {
+    { 
         case USB_GET_INFO_CMD:
         {
             test_get_capacity(usb_handle_g.device, &usb_handle_g.info.block_num, &usb_handle_g.info.block_size);
@@ -108,7 +108,7 @@ void test_get_device_description(usb_device_handle_t *usb_device)
 }
 
 
-void control_lcd_show_cmd_process()
+void control_lcd_show_cmd_process(usb_device_handle_t *usb_device)
 {
 
 }
