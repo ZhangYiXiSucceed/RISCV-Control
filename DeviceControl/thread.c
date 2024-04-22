@@ -1,6 +1,7 @@
 #include "thread.h"
 #include <stdlib.h>
  
+ /*mutex support*/
 int thread_create(thread_handle_t *thread, thread_attr_t* attr)
 {	
 	thread->attr = *attr;

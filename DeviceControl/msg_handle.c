@@ -38,6 +38,7 @@ void usb_cmd_handle()
             control_lcd_show_cmd_process();
         }break;
         default:
+        break;
     }
 }
 void set_usb_cmd(uint8_t cmd)
