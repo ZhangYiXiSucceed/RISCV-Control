@@ -25,17 +25,24 @@ void usb_cmd_handle()
 {
     switch(usb_handle_g.cmd)
     { 
+        case USB_IDLE_CMD:
+        {
+
+        }break;
         case USB_GET_INFO_CMD:
         {
             test_get_capacity(usb_handle_g.device, &usb_handle_g.info.block_num, &usb_handle_g.info.block_size);
+            set_usb_cmd(USB_IDLE_CMD);
         }break;
          case USB_SPEED_CMD:
         {
             usb_handle_g.info.usb_speed = usb_speed_test(usb_handle_g.device);
+            set_usb_cmd(USB_IDLE_CMD);
         }break;
          case USB_SHOW_CMD:
         {
             control_lcd_show_cmd_process();
+            set_usb_cmd(USB_IDLE_CMD);
         }break;
         default:
         break;
