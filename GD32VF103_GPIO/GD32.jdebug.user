@@ -1,0 +1,18 @@
+
+
+OpenDocument="gd32vf103_timer.c", FilePath="D:/Workspace/ARM/RISCV/GD32VF103_GPIO/GD32VF103_GPIO/hal/driver/source/gd32vf103_timer.c", Line=1899
+OpenDocument="gd32vf103_usart.c", FilePath="D:/Workspace/ARM/RISCV/GD32VF103_GPIO/GD32VF103_GPIO/hal/driver/source/gd32vf103_usart.c", Line=234
+OpenDocument="entry.s", FilePath="D:/Workspace/ARM/RISCV/GD32VF103_GPIO/GD32VF103_GPIO/hal/sys/entry.s", Line=206
+OpenDocument="main.c", FilePath="D:/Workspace/ARM/RISCV/GD32VF103_GPIO/GD32VF103_GPIO/app/main.c", Line=171
+OpenToolbar="Debug", Floating=0, x=0, y=0
+OpenWindow="Registers 1", DockArea=RIGHT, x=0, y=1, w=300, h=530, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, FilteredItems=[], RefreshRate=1
+OpenWindow="Disassembly", DockArea=RIGHT, x=0, y=0, w=300, h=270, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Memory 1", DockArea=BOTTOM, x=1, y=0, w=963, h=145, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0, EditorAddress=0x8000000
+OpenWindow="Functions", DockArea=LEFT, x=0, y=0, w=300, h=801, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+OpenWindow="Console", DockArea=BOTTOM, x=0, y=0, w=956, h=145, FilterBarShown=0, TotalValueBarShown=0, ToolBarShown=0
+SmartViewPlugin="", Page="", Toolbar="Hidden", Window="SmartView 1"
+TableHeader="Functions", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Address";"Size";"#Insts";"Source"], ColWidths=[510;100;100;100;164]
+TableHeader="Power Sampling", SortCol="None", SortOrder="ASCENDING", VisibleCols=["Index";"Time";"Ch 0"], ColWidths=[100;100;100]
+TableHeader="Registers 1", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Description"], ColWidths=[100;105;278]
+TableHeader="RegisterSelectionDialog", SortCol="None", SortOrder="ASCENDING", VisibleCols=[], ColWidths=[]
+TableHeader="TargetExceptionDialog", SortCol="Name", SortOrder="ASCENDING", VisibleCols=["Name";"Value";"Address";"Description"], ColWidths=[200;100;100;905]
