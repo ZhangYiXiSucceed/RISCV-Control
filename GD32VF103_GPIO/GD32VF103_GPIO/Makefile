@@ -1,0 +1,169 @@
+###### GD32V Makefile ######
+
+
+######################################
+# target
+######################################
+TARGET = gd32vf103
+
+
+######################################
+# building variables
+######################################
+# debug build?
+DEBUG = 1
+# optimization
+OPT = -O2#-flto
+
+# Build path
+BUILD_DIR    = obj
+FIRMWARE_DIR := hal
+OS_DIR       := os
+APP_DIR      := app
+SYSTEM_CLOCK := 8000000U
+
+######################################
+# source
+######################################
+# C sources
+C_SOURCES =  \
+$(wildcard $(FIRMWARE_DIR)/driver/source/*.c) \
+$(wildcard $(FIRMWARE_DIR)/sys/*.c) \
+$(wildcard $(APP_DIR)/*.c) 
+
+
+# ASM sources
+ASM_SOURCES =  \
+$(FIRMWARE_DIR)/sys/startup.s \
+$(FIRMWARE_DIR)/sys/entry.s 
+
+
+# macros for gcc
+# AS defines
+AS_DEFS = 
+
+# C defines
+C_DEFS =  \
+#-DHXTAL_VALUE=$(SYSTEM_CLOCK) 
+
+# AS includes
+AS_INCLUDES = 
+
+# C includes
+C_INCLUDES =  \
+-I. \
+-I$(FIRMWARE_DIR)/sys \
+-I$(FIRMWARE_DIR)/driver/include \
+
+######################################
+# firmware library
+######################################
+PERIFLIB_SOURCES = \
+# $(wildcard Lib/*.a)
+
+#######################################
+# binaries
+#######################################
+
+#riscv-nuclei-elf-
+PREFIX = riscv-none-embed-
+CC = $(PREFIX)gcc
+AS = $(PREFIX)gcc -x assembler-with-cpp
+CP = $(PREFIX)objcopy
+AR = $(PREFIX)ar
+SZ = $(PREFIX)size
+OD = $(PREFIX)objdump
+HEX = $(CP) -O ihex
+BIN = $(CP) -O binary -S
+
+#######################################
+# CFLAGS
+#######################################
+# cpu
+ARCH = -march=rv32imac -mabi=ilp32 -mcmodel=medlow
+
+# compile gcc flags
+ASFLAGS := $(CFLAGS) $(ARCH) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wl,-Bstatic#, -ffreestanding -nostdlib
+
+CFLAGS := $(CFLAGS) $(ARCH) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wl,-Bstatic  -ffunction-sections -fdata-sections # -ffreestanding -nostdlib
+
+ifeq ($(DEBUG), 1)
+CFLAGS += -g -gdwarf-2
+endif
+
+# Generate dependency information
+CFLAGS += -std=gnu11 -MMD -MP #.deps/$(notdir $(<:.c=.d)) -MF$(@:%.o=%.d) -MT$(@:%.o=%.d)
+
+#######################################
+# LDFLAGS
+#######################################
+# link script
+LDSCRIPT = gd32Vf103xb_backup1.lds
+
+# libraries
+#LIBS = -lc_nano -lm
+LIBDIR = 
+LDFLAGS = $(OPT) $(ARCH) -T$(LDSCRIPT) $(LIBDIR) $(LIBS) $(PERIFLIB_SOURCES) -Wl,--cref -Wl,--no-relax -Wl,--gc-sections -Wl,-M=$(BUILD_DIR)/$(TARGET).map --specs=nosys.specs --specs=nano.specs -nostartfiles #-ffreestanding -nostdlib
+
+# default action: build all
+all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+
+#######################################
+# build the application
+#######################################
+# list of objects
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+# list of ASM program objects
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+	@echo "CC $<"
+	@$(CC) -c $(CFLAGS) -MMD -MP \
+		-MF  $(BUILD_DIR)/$(notdir $(<:.c=.d)) \
+		-Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
+
+$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+	@echo "AS $<"
+	@$(AS) -c $(CFLAGS) -MMD -MP  \
+		-MF $(BUILD_DIR)/$(notdir $(<:.s=.d)) $< -o $@
+
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
+	@echo "LD $@"
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+	@echo "OD $@"
+	@$(OD) $(BUILD_DIR)/$(TARGET).elf -xS > $(BUILD_DIR)/$(TARGET).s $@
+	@echo "SIZE $@"
+	@$(SZ) $@
+
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	@echo "OBJCOPY $@"
+	@$(HEX) $< $@
+	
+$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+	@echo "OBJCOPY $@"
+	@$(BIN) $< $@	
+	
+$(BUILD_DIR):
+	mkdir $@
+
+#######################################
+# clean up
+#######################################
+
+clean:
+	-rm -fR $(BUILD_DIR)
+
+flash: all
+	-openocd -f ./gd32vf103.cfg -c init -c " flash protect 0 0 last off; \
+			program {$(BUILD_DIR)/$(TARGET).elf} verify; mww 0xe004200c 0x4b5a6978; mww 0xe0042008 0x01; resume; exit 0;"
+
+uart: all
+	stm32flash -w $(BUILD_DIR)/$(TARGET).bin /dev/ttyUSB0
+
+#######################################
+# dependencies
+#######################################
+
+# *** EOF ***
