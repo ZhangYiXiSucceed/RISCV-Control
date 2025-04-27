@@ -98,7 +98,7 @@ CFLAGS += -std=gnu11 -MMD -MP #.deps/$(notdir $(<:.c=.d)) -MF$(@:%.o=%.d) -MT$(@
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = gd32Vf103xb_backup1.lds
+LDSCRIPT = gd32Vf103xb_backup2.lds
 
 # libraries
 #LIBS = -lc_nano -lm

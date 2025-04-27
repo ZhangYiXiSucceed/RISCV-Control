@@ -230,7 +230,7 @@ _start0800:
 	addi a0, a0, 4
 	bltu a0, a1, 1b
 2:
-    call copy
+    /*call copy*/
 	/*enable mcycle_minstret*/
     csrci CSR_MCOUNTINHIBIT, 0x5
 	/* Call global constructors */

@@ -24,6 +24,22 @@ void switch_m2u_mode(){
     asm volatile ("1:":::);
 } 
 
+
+void msip_int_set()
+{
+  *(volatile unsigned int *)(TIMER_CTRL_ADDR + TIMER_MSIP) = 1;
+}
+
+int msip_int_get()
+{
+  return *(volatile unsigned int *)(TIMER_CTRL_ADDR + TIMER_MSIP) ;
+}
+
+void msip_int_clear()
+{
+  *(volatile unsigned int *)(TIMER_CTRL_ADDR + TIMER_MSIP) = 0;
+}
+
 unsigned int mtime_lo(void)
 {
   return *(volatile unsigned int *)(TIMER_CTRL_ADDR + TIMER_MTIME);

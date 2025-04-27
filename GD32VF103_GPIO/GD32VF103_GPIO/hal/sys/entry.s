@@ -202,8 +202,49 @@
   csrw CSR_MSUBM, x5  
 .endm
 
+ .section      .text.test	
+  .align 6// In CLIC mode, the trap entry must be 64bytes aligned
+  .global test_entry
+.weak test_entry
+test_entry:
+  // Allocate the stack space
+ // addi sp, sp, -19*REGBYTES
 
+  lui x20, 0x20000
+  addi x20, x20, 0x101
+  lw x21, 0x0(x20)
+  sw x21, 0x3(x20)
+  ecall
+  ret
 
+.weak get_mcountinhibit
+get_mcountinhibit:
+  // Allocate the stack space
+ // addi sp, sp, -19*REGBYTES
+  csrr x10, CSR_MCOUNTINHIBIT
+  ret
+.weak set_mcountinhibit
+set_mcountinhibit:
+  // Allocate the stack space
+ // addi sp, sp, -19*REGBYTES
+  li x10, 0x0
+  csrw CSR_MCOUNTINHIBIT, x10
+  ret
+
+.weak get_mtime
+get_mtime:
+  // Allocate the stack space
+ // addi sp, sp, -19*REGBYTES
+  csrr x10, CSR_TIME
+  ret
+.weak set_mcounteren
+set_mcounteren:
+  // Allocate the stack space
+ // addi sp, sp, -19*REGBYTES
+  li x10, 0x7
+  csrw CSR_MCOUNTEREN, x10
+  ret
+  
 ###############################################
 ###############################################
 // Trap entry point

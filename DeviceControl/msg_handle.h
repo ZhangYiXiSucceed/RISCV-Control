@@ -43,8 +43,7 @@ enum
 };
 
 enum{
-	USB_IDLE_CMD = 0x1,
-	USB_GET_INFO_CMD ,
+	USB_GET_INFO_CMD = 0x1,
 	USB_SPEED_CMD,
 	USB_SHOW_CMD,
 };

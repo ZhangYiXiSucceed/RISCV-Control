@@ -33,7 +33,9 @@ unsigned int get_cpu_freq();
 
 unsigned int __attribute__((noinline)) measure_cpu_freq(unsigned int n);
 
-
+void msip_int_set();
+int msip_int_get();
+void msip_int_clear();
 ///////////////////////////////////////////////////////////////////
 /////// ECLIC relevant functions
 ///////

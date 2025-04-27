@@ -4,6 +4,13 @@
 #include "string.h"
 #include "stdlib.h"
 #include "stdio.h"
+#include "riscv_encoding.h"
+
+#define INTERRUPT_VECTOR_MODE      1
+#define INTERRUPT_NOT_VECTOR_MODE  2
+#define INTERRUPT_MODE    INTERRUPT_NOT_VECTOR_MODE
+
+
 
 
 #define LED_RED_ON()     gpio_bit_reset(GPIOC, GPIO_PIN_13)
@@ -85,7 +92,7 @@ void timer_int_init()
     timer_initpara.prescaler         = 10799;
     timer_initpara.alignedmode       = TIMER_COUNTER_EDGE;
     timer_initpara.counterdirection  = TIMER_COUNTER_UP;
-    timer_initpara.period            = 1000;
+    timer_initpara.period            = 100000;
     timer_initpara.clockdivision     = TIMER_CKDIV_DIV1;
     timer_init(timer_periph,&timer_initpara);
 
@@ -103,8 +110,11 @@ void timer_int_init()
     eclic_global_interrupt_enable();
     eclic_priority_group_set(ECLIC_PRIGROUP_LEVEL3_PRIO1);
     /* enable and set key EXTI interrupt priority */
-    //eclic_set_intattr(TIMER2_IRQn,7);
+#if (INTERRUPT_MODE == INTERRUPT_VECTOR_MODE) 
+    eclic_set_vmode(TIMER3_IRQn);
+#else
     eclic_set_nonvmode(TIMER3_IRQn);
+#endif
     eclic_set_posedge_trig(TIMER3_IRQn);
     eclic_irq_enable(TIMER3_IRQn, 1, 0);
     test_printf("eclic_get_mth=%d\r\n",eclic_get_mth());
@@ -188,24 +198,55 @@ void led_blink(unsigned int counter)
     }
 }
 
+void set_software_int()
+{
+    #if (INTERRUPT_MODE == INTERRUPT_VECTOR_MODE) 
+    eclic_set_vmode(CLIC_INT_SFT);
+#else
+    eclic_set_nonvmode(CLIC_INT_SFT);
+#endif
+    eclic_set_posedge_trig(CLIC_INT_SFT);
+    eclic_irq_enable(CLIC_INT_SFT, 1, 0);
+}
+
 
 int test_counter_g = 0;
- //__attribute__((interrupt)) void TIMER3_IRQHandler()
-   void TIMER3_IRQHandler()
+int int_num_g = 0;
+int msip_int_num_g = 0;
+#if (INTERRUPT_MODE==INTERRUPT_VECTOR_MODE)
+ __attribute__((interrupt)) void TIMER3_IRQHandler()
+#else
+void TIMER3_IRQHandler()
+#endif
 {
     if(timer_interrupt_flag_get(TIMER3,TIMER_INT_FLAG_UP))
     {
         test_counter_g++;
+        int_num_g = read_csr(mcause);
     }  
     timer_interrupt_flag_clear(TIMER3,TIMER_INT_FLAG_UP); 
 }
 
+#if (INTERRUPT_MODE==INTERRUPT_VECTOR_MODE)
+ __attribute__((interrupt)) void eclic_msip_handler()
+#else
+void eclic_msip_handler()
+#endif
+{
+    msip_int_num_g =  read_csr(mcause);
+    msip_int_clear();
+}
 
-int main(void)
+ int current_test_count_g = 0;
+ char test_array[16] = {0};
+ int cycle_start_g = 0;
+ unsigned int mtime_low_g = 0;
+ int main(void)
 {
     GPIO_Init();
     UART0_Init();
     timer_int_init();
+    set_software_int();
     unsigned int mtvec_value = read_csr(mtvec);
     test_printf("mtvec_value=%x\r\n",mtvec_value);
 
@@ -225,15 +266,50 @@ int main(void)
         
         test_printf("%x\t",device_id_buf[i]);
     }
-    
+    test_printf("mcountinhibit=%x\r\n",get_mcountinhibit());
+    set_mcountinhibit();
+    set_mcounteren();
     while (1)
     {
         //  GPIO_OCTL(GPIOA) |= (1<<1);
         //  Delay(1000);
         //  GPIO_OCTL(GPIOA) &= ~(1<<1);
         //  Delay(1000);
-         led_blink(test_counter_g);
-         test_printf("test_counter_g=%d timer_counter=%d\r\n",test_counter_g,timer_counter_read(TIMER3));
+        led_blink(test_counter_g);
+        if(current_test_count_g != test_counter_g)
+        {
+            // test_printf("test_counter_g=%d timer_counter=%d\r\n",test_counter_g,timer_counter_read(TIMER3));
+            // test_printf("mcause=0x%x, int num=%d\r\n", int_num_g, (int_num_g&0x3FF));
+
+            cycle_start_g = read_csr(mcycle) ;
+            current_test_count_g = test_counter_g;
+            test_printf("start=%d end=%d, cycle=%d\r\n", cycle_start_g, read_csr(mcycle), (read_csr(mcycle))-cycle_start_g);
+            // test_printf("mcountinhibit=%x\r\n",get_mcountinhibit());
+
+            cycle_start_g = read_csr(instret) ;
+            current_test_count_g = test_counter_g;
+            test_printf("start=%d end=%d, cycle=%d\r\n", cycle_start_g, read_csr(instret), (read_csr(instret))-cycle_start_g);
+
+            // test_printf("mtime low=%d, diff=%d\r\n",mtime_lo(), (mtime_lo()-mtime_low_g));
+            // mtime_low_g = mtime_lo();
+            // msip_int_set();
+            // test_printf("set msip int,reg=%d, int num=%d\r\n",msip_int_get(),  (msip_int_num_g&0x3FF));
+        }
+        if(test_counter_g == 3)
+        {
+            // current_test_count_g = 0;
+            // test_printf("%d\r\n",(test_counter_g/current_test_count_g));
+            // int *addr = (int*)(((char*)test_array)+1);
+            // int i;
+            // for(i=0;i<16;i++)
+            // {
+            //     *addr = 0x12345678;
+            //     addr++;
+            //     test_printf("addr: %x\r\n",(*addr));
+            // }
+            // test_entry();
+        }
+
         //  if(timer_flag_get(TIMER3,TIMER_FLAG_UP))
         //  {
         //     test_counter_g++;
@@ -243,3 +319,29 @@ int main(void)
     }
 }
 
+unsigned int handle_nmi()
+{
+  //write(1, "nmi\n", 5);
+  //_exit(1);
+  test_printf("handle_nmi\r\n");
+  return 0;
+}
+
+
+unsigned int handle_trap(unsigned int mcause, unsigned int sp)
+{
+  if(mcause == 0xFFF) {
+      handle_nmi();
+  }
+  //write(1, "trap\n", 5);
+  test_printf("In trap handler, the sp is %x\r\n", sp);
+  test_printf("In trap handler, the mcause is %x\r\n", mcause);
+  test_printf("In trap handler, the mepc is 0x%x\r\n", read_csr(mepc));
+  test_printf("In trap handler, the mtval is 0x%x\r\n", read_csr(mtval));
+  //test_printf("In trap handler, the msubm is 0x%x\n", read_csr(CSR_MSUBM));
+  test_printf("In trap handler, the mstatus is 0x%x\r\n", read_csr(mstatus));
+  test_printf("In trap handler, the MIE is 0x%x\r\n", read_csr(mstatus) & MSTATUS_MIE);
+  //_exit(mcause);
+  while(1);
+  return 0;
+}

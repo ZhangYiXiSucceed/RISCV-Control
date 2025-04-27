@@ -12,9 +12,9 @@ __attribute__((weak)) unsigned int handle_nmi()
 
 __attribute__((weak)) unsigned int handle_trap(unsigned int mcause, unsigned int sp)
 {
-  //if(mcause == 0xFFF) {
+  if(mcause == 0xFFF) {
       handle_nmi();
- // }
+  }
   //write(1, "trap\n", 5);
   //printf("In trap handler, the mcause is %d\n", mcause);
   //printf("In trap handler, the mepc is 0x%x\n", read_csr(mepc));
